@@ -29,3 +29,23 @@ jobs:
         run: |
           & 'C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\msbuild.exe' DatabaseProjectmatdevsqlpool2.sqlproj /p:Configuration=Release
       # No need to publish an artifact afterwards as deploy in same job
+      
+      # Login using Azure credentials
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      # Use the Azure SQL Deploy Action
+      - name: Azure SQL Deploy
+        uses: Azure/sql-action@v1
+        with:
+          # Name of the SQL Server
+          server-name: 'mattest2synapsews.sql.azuresynapse.net'
+          # The connection string, including authentication information for the Azure SQL Database 
+          connection-string: '${{ secrets.AZURE_SQL_CONNECTION_STRING }}'
+          # Path to the dacpac file
+          dacpac-package: ${{ github.workspace }}\bin\Release\kcdemodbproject.dacpac
+          # Additional arguments 
+          arguments: '/p:IncludeCompositeObjects=true'   
+          
+          
+          
